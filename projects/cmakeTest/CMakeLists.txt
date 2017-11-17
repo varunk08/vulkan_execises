@@ -1,6 +1,6 @@
-cmake_minimum_required(2.6)
+cmake_minimum_required (VERSION 2.6)
 
-project(cmake_test)
+project (cmake_test)
 
 set (SRC_DIR src)
 set (SRC_FILES main.cpp)

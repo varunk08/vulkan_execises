@@ -9,3 +9,5 @@
 *.db
 *.suo
 *.ilk
+
+build/

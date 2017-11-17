@@ -34,3 +34,5 @@ system environment variables can be accessed as $ENV{VAR}
 [HKEY_CURRENT_USER\\Software\\path1\\path2;key] syntax for referencing registry keys can
 also be used
 
+two main directories: src and bin. src has the src files along with the CMakeLists files
+
