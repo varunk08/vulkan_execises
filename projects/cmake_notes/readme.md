@@ -1,12 +1,6 @@
-This is a repo which will serve as a testground for vulkan.
-
-Tutorials following:
-https://vulkan-tutorial.com/Introduction
-
-
-
 CMAKE NOTES:
 (Notes from the Mastering Cmake book).
+
 Generate project files for other IDEs
 Handles cross platform building, system introspection
 
