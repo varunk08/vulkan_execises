@@ -6,6 +6,7 @@ https://vulkan-tutorial.com/Introduction
 
 
 CMAKE NOTES:
+(Notes from the Mastering Cmake book).
 Generate project files for other IDEs
 Handles cross platform building, system introspection
 
@@ -21,4 +22,15 @@ File dependencies and parallel builds are handled.
 Benefits for cross-platform software dev:
 can test machine byte order
 can configure files with system dependent information
+
+Cmake can be installed from binaries or built from src
+
+Commands are of the form command(args)
+command names are case in-sensitive
+variables are referenced using a ${VAR} syntax
+set (foo a b c) will set foo to a b c
+can be passed in to a command: command (${foo}), is equivalent to command (a b c)
+system environment variables can be accessed as $ENV{VAR}
+[HKEY_CURRENT_USER\\Software\\path1\\path2;key] syntax for referencing registry keys can
+also be used
 
