@@ -33,3 +33,16 @@ two main directories: src and bin. src has the src files along with the CMakeLis
 Running from command line:
 from a directory where the build files will be written, type
 cmake -G "Visual Studio 14 2015 Win64" {relative path to src}
+
+Specifying the compiler:
+The generator can specify the compiler, an environment variable, cache entry
+
+Dependency analysis:
+depend.make stores depend info for all object files in the directory
+flags.make compile flags used for src files
+dependInfo.make used to keep dependency info up to date
+build.make rules for building the dependencies
+ 
+ Editing CMakeLists file:
+ within visual studio the CMakeLists files are listed as part of the project and you can edit them simply by double clicking on them.
+ 
