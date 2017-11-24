@@ -54,6 +54,32 @@ The global generator object has many local generator objects
 each local generator object is for a single directory and represents the config of one CMakeLists file
 for example, for visual studio, the global generator generates the .sln file while each local generator generates a .proj
 
+"targets" can be libraries or executables, the result of the build
+
+include(file1. cmake) can be used to include and process the commands in file1.cmake
+
+when a variable is set, it is visible to the current CMakeLists file and to all subdirectories
+when a new scope is entered all the existing variable values are copied, a new scope is created
+any variables created in the child scope does not affect the parent scope
+use PARENT_SCOPE to affect parent scope as well: set(variable 2 PARENT_SCOPE)
+
+variables set from the cmake gui must be used as cache entries
+cmake generates a cache file in the directory of the binary that is built
+option (VAR_NAME "What do you want this var to be?") sets a variable in the cache
+set (VAR_NAME ON CACHE BOOL "set to true?") the set() command can also put variables on the cache
+variable types are BOOL, PATH, FILEPATH, STRING
+mark_as_advanced command makes a variable advanced. it is hidden from the user in gui
+a variable can still be overridden with the set command without using the CACHE option
+the cache values are checked only if the current cmMakeFile object doesn't have that variable
+the FORCE option can change a cache value from the cmakelists file
+
+
+Build configuration:
+cmake supports by default Debug, Release, MinSizeRel and RelWithDebInfo
+The CMAKE_CONFIGURATION_TYPES variable is used to tell cmake which configurations are put in the workspace (visual studio)
+CMAKE_BUILD_TYPE is used to specify only one configuration while cmake is run (make files)
+
+
 
 
  
