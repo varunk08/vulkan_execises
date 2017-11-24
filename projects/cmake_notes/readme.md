@@ -43,6 +43,17 @@ flags.make compile flags used for src files
 dependInfo.make used to keep dependency info up to date
 build.make rules for building the dependencies
  
- Editing CMakeLists file:
- within visual studio the CMakeLists files are listed as part of the project and you can edit them simply by double clicking on them.
+Editing CMakeLists file:
+within visual studio the CMakeLists files are listed as part of the project and you can edit them simply by double clicking on them.
+ 
+Key concepts:
+cmake is written in c++
+each command is a class 
+there is a global top level cmake object generated. it has one globalGenerator object.
+The global generator object has many local generator objects
+each local generator object is for a single directory and represents the config of one CMakeLists file
+for example, for visual studio, the global generator generates the .sln file while each local generator generates a .proj
+
+
+
  
