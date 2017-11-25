@@ -18,6 +18,7 @@ can test machine byte order
 can configure files with system dependent information
 
 Cmake can be installed from binaries or built from src
+cmake doesn't use and existing language like python because the creators didn't want it to require a tool to run
 
 Commands are of the form command(args)
 command names are case in-sensitive
@@ -84,9 +85,59 @@ CMAKE_BUILD_TYPE is used to specify only one configuration while cmake is run (m
 anything within double quotes is treated as a single argument
 backslash escapes characters
 
+Basic Commands:
+`project` defines name and language of project
+default is c and cpp
+subdirectories are added to the project using the `add_subdirectory` command.
 
+for visual studio header files won't show up in the IDE unless it is added as a source file
 
+Flow control:
+conditional: `if`
+loops: `foreach` and `while`
+procedures: `macro` and `function`
 
+the conditional of the `if` is repeated in the `else`, `elseif` and `endif` clauses
+if supports some custom cmake operations and only a limited set of logical combinations
+expressions within `if` are evaluated in the order they appear. For example:
+```
+NOT 0 AND 0
+= 1 AND 0
+= 0
+```
+Page 38 lists the order of precedence of operators and commands.
+The following are considered true expressions: `ON, 1, YES, TRUE, Y` and their opposites false
+additionally `NOTFOUND, *-NOTFOUND, IGNORE` are also false expressions
+
+The `macro` and `function` that is defined can be used by any cmakelists files processed after its definition
+standard arguments like `ARGC, ARGV, ARGN, ARGV0 and ARGV1` etc are defined
+arguments become variables within functions
+
+`macro`s don't push and pop scope. the arguments are string replaced prior to execution
+`break` and `return` can be used to exit macros, loops and functions.
+
+regular expressions:
+`^` matches at beginning of line or string
+`$` matches end of a line or string 
+`.` matches single character
+`[]` matches any characters inside them
+`[^]` matches any characters not inside the brackets
+`[-]` matches any character in range on either side of the dash
+`*` matches preceding pattern zero or more times
+`+` matches preceding pattern one or more times
+`?` matches preceding pattern zero or once only
+`()` saves a matched expression and uses it in later replacement
+`(|)` matches either the left or right side of the bar
+
+checking versions of cmake:
+`CMAKE_VERSION` variable is pre-defined and can be used for testing versions
+`cmake_minimu_required (VERSION x.x)` can also be used to indicate support
+
+cmake modules:
+modules are re-useable code put into cmake files that can be used in our own cmakelists files
+they are found in the modules subdirectory of the cmake installation
+modules can be included using `include`
+main categories of modules: find modules, system introspection modules, utility modules
 
 
 
