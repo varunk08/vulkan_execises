@@ -1,4 +1,4 @@
-CMAKE NOTES:
+### CMAKE NOTES:
 (Notes from the Mastering Cmake book).
 
 Generate project files for other IDEs
@@ -43,10 +43,10 @@ flags.make compile flags used for src files
 dependInfo.make used to keep dependency info up to date
 build.make rules for building the dependencies
  
-Editing CMakeLists file:
+#### Editing CMakeLists file:
 within visual studio the CMakeLists files are listed as part of the project and you can edit them simply by double clicking on them.
  
-Key concepts:
+#### Key concepts:
 cmake is written in c++
 each command is a class 
 there is a global top level cmake object generated. it has one globalGenerator object.
@@ -74,12 +74,29 @@ the cache values are checked only if the current cmMakeFile object doesn't have 
 the FORCE option can change a cache value from the cmakelists file
 
 
-Build configuration:
+#### Build configuration:
 cmake supports by default Debug, Release, MinSizeRel and RelWithDebInfo
 The CMAKE_CONFIGURATION_TYPES variable is used to tell cmake which configurations are put in the workspace (visual studio)
 CMAKE_BUILD_TYPE is used to specify only one configuration while cmake is run (make files)
 
 
+#### Writing cmake files:
+anything within double quotes is treated as a single argument
+backslash escapes characters
 
 
- 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
