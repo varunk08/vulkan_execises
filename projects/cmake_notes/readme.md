@@ -149,19 +149,28 @@ swig can wrap c/cpp code by reading the headers into interface usable with other
 Other modules mentioned in the book: qt, fltk, png, zlib
 
 Policies:
-a new feature or change is made to cmake that is not compatible with the older versions of cmake 
+a new feature or change is made to cmake that is not compatible with the older versions of cmake.
+ 
 this can create problems when using older CMakeLists file. 
+
 policies are a mechanism in cmake to help improve backward compatibility and to track compatibility issues between different versions of 
 cmake
+
 `cmake_policy(VERSION x.x)` is used to set the policy version
+
 this requests the new behavior for all policies introduced in cmake version 2.6 or earlier
+
 `cmake_minimum_required` command also sets the policy
+
 `cmake_policy (SET CMP0002 OLD/NEW)` can request cmake to use the old/new policy of a particular change
 
 policy stack:
-policy settings are scoped using a stack
-a new level of the stack is pushed when entering a new sub directory and popped when leaving it
-this is useful when some projects are built with old policies and are maintained separately
+policy settings are scoped using a stack.
+
+a new level of the stack is pushed when entering a new sub directory and popped when leaving it.
+
+this is useful when some projects are built with old policies and are maintained separately.
+
 
 #### Linking Libraries
 
