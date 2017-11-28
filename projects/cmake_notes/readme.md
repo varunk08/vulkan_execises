@@ -174,6 +174,8 @@ this is useful when some projects are built with old policies and are maintained
 
 #### Linking Libraries
 
+Linker flags: `-l` for library, `-Bstatic or -Bshared` for linkage type.  
+`target_link_libraries (foo debug libdebug optimized libopt)` chooses the debug or optimized version depending on if the debug build was selected.  
 
 
 
