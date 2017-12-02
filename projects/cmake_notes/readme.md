@@ -181,7 +181,6 @@ static vs shared:
 linkers can choose what objects to link with the executable in static libraries. this makes their sizes small  
 for shared libraries, the atomic unit is the entire library. all objects are present in the shared library whether used by the executable or not.  
 
-questions:  
 which symbols are exported by the shared library (unix: all symbols exported, windows: developer must explicitly tell the linker)
 microsoft uses `__declspec (dllexport)` directive. 
 
