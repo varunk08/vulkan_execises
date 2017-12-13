@@ -184,7 +184,13 @@ for shared libraries, the atomic unit is the entire library. all objects are pre
 which symbols are exported by the shared library (unix: all symbols exported, windows: developer must explicitly tell the linker)
 microsoft uses `__declspec (dllexport)` directive. 
 
+two approaches  for building dlls in windows:
+1. Cmake automatically defines `${LIB_NAME}_EXPORTS` when building a dll on windows.  
+2. Using a .def file. Custom cmake commands run a pre-link program to create this .def file from the compiled object files. For example, use a perl script to run the `dumpbin` program on the obj files and extract all the exportable symbols and write the .def file.  
 
+windows vs unix: dlls on windows are required to be fully resolved, this means they must link every symbol at creation. unix systems allow shared libraries to get symbols from the executable or other shared libraries at run time. this increases load time in unix.  
+
+finding which libraries are used by executable: `ldd` on linux, `depends` on windows. cmake will add run time library path info into the linked executable. this feature can be turned off by settinsg the cache entry `CMAKE_SKIP_RPATH` to false.  
 
 
 
