@@ -193,6 +193,32 @@ windows vs unix: dlls on windows are required to be fully resolved, this means t
 finding which libraries are used by executable: `ldd` on linux, `depends` on windows. cmake will add run time library path info into the linked executable. this feature can be turned off by settinsg the cache entry `CMAKE_SKIP_RPATH` to false.  
 
 
+####Shared library versioning:  
+If the API of a shared library doesn't change but the implementation changes, old executables linked against the old API will run fine. But if the API changes, then versioning is needed.
+Executable has to be updated to use the new symbolic link. `libfoo.so` being the old version and the new versions being `libfoo.so.1` and `libfoo.so.2` and so on.  
+Platforms that support `soname` natively use this scheme where the `symbolic link` has to be updated to use the new shared library.  
 
-
-
+####Installing Files  
+For makefile generators (unix, nmake, borland, mingw) the user simply runs `make install` and the make tool will invoke cmake's installation module. With Gui based systems, the user simply builds the target called `INSTALL`  
+Install signatures: `TARGETS, FILES, PROGRAMS, DIRECTORY, SCRIPT and CODE`.  
+Target files are categorized as  
+1. executables - `RUNTIME`
+2. loadable modules - `LIBRARY`
+3. shared libraries - `LIBRARY`
+4. dynamic-link libraries - `RUNTIME`
+5. import libraries - `ARCHIVE`
+6. static libraries - `ARCHIVE`  
+Example  
+````
+install (TARGETS myExecutable DESTINATION bin)
+install (TARGETS myStaticLib DESTINATION lib/myproject)
+install (TARGETS myPlugin DESTINATION lib)
+````
+An easier way to install a shared lib using keyword arguments:  
+````
+isntall (TARGETS mySharedLib
+         RUNTIME DESTINATION bin
+         LIBRARY DESTINATION lib
+         ARCHIVE DESTINATION lib/myproject)
+````
+Here in windows the dll is installed to bin and the .lib of the same library is installed in lib/myproject  
