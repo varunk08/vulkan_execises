@@ -222,3 +222,5 @@ isntall (TARGETS mySharedLib
          ARCHIVE DESTINATION lib/myproject)
 ````
 Here in windows the dll is installed to bin and the .lib of the same library is installed in lib/myproject  
+
+####Installing Files
