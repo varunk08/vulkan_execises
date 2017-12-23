@@ -223,4 +223,6 @@ isntall (TARGETS mySharedLib
 ````
 Here in windows the dll is installed to bin and the .lib of the same library is installed in lib/myproject  
 
-####Installing Files
+Component assignments may be specified by adding the `COMPONENT` argument to each of the install commands.  
+General purpose installation of files is specified using the `FILES` signature.  
+
