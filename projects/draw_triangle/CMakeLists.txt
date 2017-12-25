@@ -1,9 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 project (draw_triangle)
 
-# source files
-set (SRC_DIR src)
-set (SRC_FILES main.cpp)
 
 # libraries
 set (LIB_DIR ../../libraries)
@@ -15,12 +12,18 @@ set (GLM_INCLUDE ${LIB_DIR}/glm)
 set (GLFW_BIN_DIR ${LIB_BIN_DIR}/glfw/)
 set (GLFW_BIN_VS2015 ${GLFW_BIN_DIR}/lib-vc2015)
 
-# Find Vulkan
+set (COMMON_DIR ../../common)
+
+# source files
+set (SRC_DIR src)
+set (SRC_FILES ${SRC_DIR}/main.cpp)
+
+# Find vulkan
 find_path(VULKAN_INCLUDE_DIR NAMES vulkan/vulkan.h PATHS "$ENV{VULKAN_SDK}/Include")
 find_library (VK_SDK NAMES vulkan-1 HINTS "$ENV{VK_SDK_PATH}/Lib32")
 
 if (NOT VULKAN_INCLUDE_DIR)
-	message(FATAL_ERROR "vulkan include dir not found")
+	message (FATAL_ERROR "vulkan include dir not found")
 endif()	
 
 if (NOT VK_SDK)	
@@ -36,8 +39,12 @@ endif()
 
 
 # include everything in the executable
-include_directories (${GLFW_INCLUDE} ${GLM_INCLUDE} ${VULKAN_INCLUDE_DIR})	
+include_directories (${COMMON_DIR}
+                     ${GLFW_INCLUDE}
+                     ${GLM_INCLUDE}
+                     ${VULKAN_INCLUDE_DIR}
+                     )	
 
-add_executable(triangle ${SRC_DIR}/${SRC_FILES})
+add_executable(triangle ${SRC_FILES})
 
 target_link_libraries (triangle ${VK_SDK} ${GLFW_BIN})
