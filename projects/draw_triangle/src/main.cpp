@@ -22,18 +22,47 @@ const bool enableValidationLayers = false;
 const bool enableValidationLayers = true;
 #endif
 
-VkResult CreateDebugReportCallbackEXT(VkInstance instance,
+VkResult CreateDebugReportCallbackEXT(
+    VkInstance                                instance,
     const VkDebugReportCallbackCreateInfoEXT* pCreateInfo,
-    const VkAllocationCallbacks*  pAllocator,
-    VkDebugReportCallbackEXT* pCallback);
-void DestroyDebugReportCallbackEXT(VkInstance instance, VkDebugReportCallbackEXT callback, const VkAllocationCallbacks* pAllocator);
+    const VkAllocationCallbacks*              pAllocator,
+    VkDebugReportCallbackEXT*                 pCallback);
+
+void DestroyDebugReportCallbackEXT(
+    VkInstance                   instance,
+    VkDebugReportCallbackEXT     callback,
+    const VkAllocationCallbacks* pAllocator);
 
 //=================================================================================================
+// declarations
+
+struct QueueFamilyIndices
+{
+    int graphicsFamily = -1;
+
+    bool isComplete()
+    {
+        return graphicsFamily >= 0;
+    }
+};
+
 class HelloTriangleApp
 {
 public:
     void Run();
+
 private:
+
+    static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
+        VkDebugReportFlagsEXT      flags,
+        VkDebugReportObjectTypeEXT objType,
+        uint64                     obj,
+        size_t                     location,
+        int32                      code,
+        const char*                layerPrefix,
+        const char*                msg,
+        void*                      userData);
+
     void InitWindow();
     void InitVulkan();
     void MainLoop();
@@ -42,23 +71,20 @@ private:
     bool CheckValidationLayerSupport();
     std::vector<const char*> GetRequiredExtensions();
     void SetupDebugCallback();
+    void PickPhysicalDevice();
+    QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
+    bool IsDeviceSuitable(VkPhysicalDevice device);
 
-    static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
-        VkDebugReportFlagsEXT flags,
-        VkDebugReportObjectTypeEXT objType,
-        uint64 obj,
-        size_t location,
-        int32 code,
-        const char* layerPrefix,
-        const char* msg,
-        void* userData);
 
     GLFWwindow* m_pWindow;
     VkInstance  m_VkInstance;               // Handle to the vulkan instance.
     VkDebugReportCallbackEXT m_hCallback;
+    VkPhysicalDevice m_physicalDevice;
 };
 
 //=================================================================================================
+// Main
+
 int main()
 {
     HelloTriangleApp app;
@@ -77,6 +103,55 @@ int main()
 }
 
 //=================================================================================================
+// Definitions
+
+VkResult CreateDebugReportCallbackEXT(
+    VkInstance instance,
+    const VkDebugReportCallbackCreateInfoEXT* pCreateInfo,
+    const VkAllocationCallbacks*  pAllocator,
+    VkDebugReportCallbackEXT* pCallback)
+{
+    VkResult result = VK_ERROR_EXTENSION_NOT_PRESENT;
+
+    auto func = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(instance,
+        "vkCreateDebugReportCallbackEXT");
+
+    if (func != nullptr)
+    {
+        result = func(instance, pCreateInfo, pAllocator, pCallback);
+    }
+
+    return result;
+}
+
+void DestroyDebugReportCallbackEXT(
+    VkInstance instance,
+    VkDebugReportCallbackEXT callback,
+    const VkAllocationCallbacks* pAllocator)
+{
+    auto func = (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(instance,
+        "vkDestroyDebugReportCallbackEXT");
+    if (func != nullptr)
+    {
+        func(instance, callback, pAllocator);
+    }
+}
+
+VKAPI_ATTR VkBool32 VKAPI_CALL HelloTriangleApp::DebugCallback(
+    VkDebugReportFlagsEXT flags,
+    VkDebugReportObjectTypeEXT objType,
+    uint64 obj,
+    size_t location,
+    int32 code,
+    const char* layerPrefix,
+    const char* msg,
+    void* userData)
+{
+    std::cerr << "validation layer: " << msg << std::endl;
+
+    return VK_FALSE;
+}
+
 void HelloTriangleApp::Run()
 {
     InitWindow();
@@ -103,6 +178,7 @@ void HelloTriangleApp::InitVulkan()
 {
     CreateInstance();
     SetupDebugCallback();
+    PickPhysicalDevice();
 }
 
 void HelloTriangleApp::MainLoop()
@@ -227,37 +303,7 @@ std::vector<const char*> HelloTriangleApp::GetRequiredExtensions()
     return extensions;
 }
 
-VkResult CreateDebugReportCallbackEXT(
-    VkInstance instance,
-    const VkDebugReportCallbackCreateInfoEXT* pCreateInfo,
-    const VkAllocationCallbacks*  pAllocator,
-    VkDebugReportCallbackEXT* pCallback)
-{
-    VkResult result = VK_ERROR_EXTENSION_NOT_PRESENT;
 
-    auto func = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(instance,
-                                                                          "vkCreateDebugReportCallbackEXT");
-
-    if (func != nullptr)
-    {
-        result = func(instance, pCreateInfo, pAllocator, pCallback);
-    }
-
-    return result;
-}
-
-void DestroyDebugReportCallbackEXT(
-    VkInstance instance,
-    VkDebugReportCallbackEXT callback,
-    const VkAllocationCallbacks* pAllocator)
-{
-    auto func = (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(instance,
-                                                                           "vkDestroyDebugReportCallbackEXT");
-    if (func != nullptr)
-    {
-        func(instance, callback, pAllocator);
-    }
-}
 
 void HelloTriangleApp::SetupDebugCallback()
 {
@@ -279,17 +325,82 @@ void HelloTriangleApp::SetupDebugCallback()
     }
 }
 
-VKAPI_ATTR VkBool32 VKAPI_CALL HelloTriangleApp::DebugCallback(
-    VkDebugReportFlagsEXT flags,
-    VkDebugReportObjectTypeEXT objType,
-    uint64 obj,
-    size_t location,
-    int32 code,
-    const char* layerPrefix,
-    const char* msg,
-    void* userData)
-{
-    std::cerr << "validation layer: " << msg << std::endl;
 
-    return VK_FALSE;
+
+void HelloTriangleApp::PickPhysicalDevice()
+{
+    m_physicalDevice = VK_NULL_HANDLE;
+    uint32 deviceCount = 0;
+    vkEnumeratePhysicalDevices(m_VkInstance, &deviceCount, nullptr);
+
+    if (deviceCount == 0)
+    {
+        throw std::runtime_error("failed to find GPUs with vulkan support!");
+    }
+
+    std::vector<VkPhysicalDevice> devices(deviceCount);
+    vkEnumeratePhysicalDevices(m_VkInstance, &deviceCount, devices.data());
+
+    for (const auto& device : devices)
+    {
+        if (IsDeviceSuitable(device))
+        {
+            m_physicalDevice = device;
+            break;
+        }
+    }
+
+    if (m_physicalDevice == VK_NULL_HANDLE)
+    {
+        throw std::runtime_error("failed to find a suitable GPU!");
+    }
+}
+
+QueueFamilyIndices HelloTriangleApp::FindQueueFamilies(
+    VkPhysicalDevice device)
+{
+    QueueFamilyIndices indices;
+    uint32 queueFamilyCount = 0;
+
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
+
+    std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
+
+    int i = 0;
+    for (const auto& queueFamily : queueFamilies)
+    {
+        if ((queueFamily.queueCount > 0) &&
+            (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT))
+        {
+            indices.graphicsFamily = i;
+        }
+
+        if (indices.isComplete())
+        {
+            break;
+        }
+
+        i++;
+    }
+
+    return indices;
+}
+
+bool HelloTriangleApp::IsDeviceSuitable(
+    VkPhysicalDevice device)
+{
+    /*    VkPhysicalDeviceProperties deviceProperties;
+    vkGetPhysicalDeviceProperties(device, &deviceProperties);
+
+    VkPhysicalDeviceFeatures deviceFeatures;
+    vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
+
+    return deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU &&
+    deviceFeatures.geometryShader;
+    */
+
+    QueueFamilyIndices indices = FindQueueFamilies(device);
+
+    return indices.isComplete();
 }
