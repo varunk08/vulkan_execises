@@ -14,3 +14,13 @@ The `NDEBUG` macro is part of the C++ standard and means not debug.
 
 ### Queue families
 `vkGetPhysicalDeviceQueueFamilyProperties` is used to retrieve a list of queue families.  
+
+### Logical device
+After creating a physical device, we need to create a `logical device` to interface with it.  
+Multiple logical devices can be created from the same physical device.  
+
+### window surface  
+`VK_KHR_surface` is the WSI extension used to present to the Screen. It exposes `VkSurfaceKHR` object that represents an abstract type of surface to present rendered images to.   
+window surfaces are entirely optional, vulkan being platform agnostic.  
+The window surface needs to be created right after the instance creation, because it can actually  influence the  physical device selection.  
+Creation of this `VkSurfaceKHR` is platform dependent though, so there is a platform specific addition to the extension, which for windows is `VK_KHR_win32_surface`.  
