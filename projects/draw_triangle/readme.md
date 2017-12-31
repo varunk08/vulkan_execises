@@ -29,4 +29,5 @@ Creation of this `VkSurfaceKHR` is platform dependent though, so there is a plat
 ### swap Chain  
 essentially a queue of images waiting to be presented on the screen.  
 synchronizes the presentation of images with the refresh rate of the screen.  
-`VK_KHR_swapchain` extension must be enabled
+`VK_KHR_swapchain` extension must be enabled  
+Creating a swap chain also involves a lot more settings than instance and device creation. we need to query support for surface capabilities, surface formats, available presentation modes.  

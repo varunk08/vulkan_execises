@@ -18,6 +18,11 @@ const std::vector<const char*> validationLayers =
     "VK_LAYER_LUNARG_standard_validation"
 };
 
+const std::vector<const char*> deviceExtensions =
+{
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME
+};
+
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
 #else
@@ -50,6 +55,13 @@ struct QueueFamilyIndices
     }
 };
 
+struct SwapChainSupportDetails
+{
+    VkSurfaceCapabilitiesKHR capabilities;
+    std::vector<VkSurfaceFormatKHR> formats;
+    std::vector<VkPresentModeKHR> presentModes;
+};
+
 class HelloTriangleApp
 {
 public:
@@ -80,6 +92,8 @@ private:
     bool IsDeviceSuitable(VkPhysicalDevice device);
     bool CreateLogicalDevice();
     void CreateSurface();
+    bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
+    SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
 
     GLFWwindow* m_pWindow;
     VkInstance  m_VkInstance;               // Handle to the vulkan instance.
@@ -415,7 +429,18 @@ bool HelloTriangleApp::IsDeviceSuitable(
 {
     QueueFamilyIndices indices = FindQueueFamilies(device);
 
-    return indices.isComplete();
+    bool extensionsSupported = CheckDeviceExtensionSupport(device);
+    
+    bool swapChainAdequate = false;
+    if (extensionsSupported)
+    {
+        SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(device);
+        swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
+    }
+
+    return indices.isComplete() &&
+           extensionsSupported &&
+           swapChainAdequate;
 }
 
 bool HelloTriangleApp::CreateLogicalDevice()
@@ -445,7 +470,8 @@ bool HelloTriangleApp::CreateLogicalDevice()
     createInfo.pQueueCreateInfos = queueCreateInfos.data();
     createInfo.queueCreateInfoCount = static_cast<uint32>(queueCreateInfos.size());
     createInfo.pEnabledFeatures = &deviceFeatures;
-    createInfo.enabledExtensionCount = 0;
+    createInfo.enabledExtensionCount = static_cast<uint32>(deviceExtensions.size());
+    createInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
     if (enableValidationLayers)
     {
@@ -494,4 +520,55 @@ void HelloTriangleApp::CreateSurface()
     {
         throw std::runtime_error("failed to crete window surface!");
     }
+}
+
+bool HelloTriangleApp::CheckDeviceExtensionSupport(
+    VkPhysicalDevice device)
+{
+    uint32 extensionCount;
+
+    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+
+    std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+
+    std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+
+    for (const auto& extension : availableExtensions)
+    {
+        requiredExtensions.erase(extension.extensionName);
+    }
+
+    return requiredExtensions.empty();
+}
+
+SwapChainSupportDetails HelloTriangleApp::QuerySwapChainSupport(
+    VkPhysicalDevice device)
+{
+    SwapChainSupportDetails details;
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, m_surface, &details.capabilities);
+
+    uint32_t formatCount;
+    vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_surface, &formatCount, nullptr);
+
+    if (formatCount != 0)
+    {
+        details.formats.resize(formatCount);
+        vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_surface, &formatCount, details.formats.data());
+    }
+
+    uint32_t presentModeCount;
+    vkGetPhysicalDeviceSurfacePresentModesKHR(device, m_surface, &presentModeCount, nullptr);
+
+    if (presentModeCount != 0)
+    {
+        details.presentModes.resize(presentModeCount);
+
+        vkGetPhysicalDeviceSurfacePresentModesKHR(device,
+                                                  m_surface,
+                                                  &presentModeCount,
+                                                  details.presentModes.data());
+    }
+
+    return details;
 }
