@@ -106,3 +106,5 @@ dynamic state can be changed during draw time
 used commonly to pass transformation matrix or texture samplers in fragment shader.  
 these uniform variables need to be specified during pipeline creation by creating a `VkPipelineLayout`  
 
+### framebuffers
+attachments specified during render pass creation are bound by wrapping them into a `VkFramebuffer` object.  
