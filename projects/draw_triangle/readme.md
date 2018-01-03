@@ -108,3 +108,10 @@ these uniform variables need to be specified during pipeline creation by creatin
 
 ### framebuffers
 attachments specified during render pass creation are bound by wrapping them into a `VkFramebuffer` object.  
+
+### fences and semaphores
+the operations in the swap chain are not guaranteed to be finished in order. but the execution in the order specified is necessary   
+fences or semaphores can be used to synchronize the order of operations within the swapchain  
+state of fences can be accessed from your program and semaphores cannot be  
+fences are designed to synchronize your application itself with rendering operation  
+semaphores are used to synchronize operations within or across command queues  
