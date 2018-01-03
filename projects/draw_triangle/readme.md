@@ -47,7 +47,40 @@ Only `VK_PRESENT_MODE_FIFO_KHR` is guaranteed to be available.
 Vulkan tells us to match the resolution of the window by setting the width and height in the `currentExtent`. Some window managers do allow us to differ here and this is indicated by setting the width and height in `currentExtent` to a special value: the maximum value of `uint32_t`. 
 
 
-### Image Views  
+### image Views  
 an image view is literally a view into an image.  
-an image view is sufficient to start using an image as a texture but it is not ready to be used as a render target. that required one more step of indirection, known as a framebuffer.  
+an image view is sufficient to start using an image as a texture but it is not ready to be used as a render target. that requires one more step of indirection, known as a framebuffer.  
+
+### graphics pipeline
+stages:  
+Input assembler,  
+Vertex shader,  
+tessellation shader,  
+geometry shader,  
+rasterization,  
+fragment shader,  
+color blending stage.  
+
+
+### shaders  
+shader code in vulkan has to be specified in bytecode format.  
+this format is called `SPIR-v`  
+both vulkan and openCL can use it  
+advantages of bytecode format: compilers by GPU vendors to turn shader code (glsl, hlsl) into native code (ISA) is less complex.  
+khronos has released vendor independent compiler that compiles GLSL to SPIR-v  
+it is included with the LunarG SDK as `glslangValidator.exe`  
+
+GLSL uses global variables to handle input and output  
+vector type is `vec`  
+
+clip coordinate is a four dimensional vector from the vertex shader that is subsequently turned into a normalized device coordinate by dividing the whole vector by its last component.  
+The normalized device coordinates are homogenous coordinates that map the framebuffer to a [-1, 1] by [-1, 1] coordinate system  
+The sign of the Y coordinate is flipped compared to OpenGL (+ve is down)  
+
+"creating a vertex buffer in vulkan and filling it with data is not trivial!"  
+The `GL_ARB_separate_shader_objects` extension is required for vulkan shaders to work.  
+
+`layout(location=0)` modifier specifies the index of the framebuffer.  
+
+Before passing in the bytecode to the pipeline we have to wrap it in a `VkShaderModule`  
 

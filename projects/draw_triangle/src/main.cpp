@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <fstream>
 #include <iostream>
 #include <stdexcept>
 #include <set>
@@ -79,6 +80,7 @@ private:
         const char*                layerPrefix,
         const char*                msg,
         void*                      userData);
+    static std::vector<char>  ReadFile(const std::string& filename);
 
     void InitWindow();
     void InitVulkan();
@@ -100,6 +102,8 @@ private:
     VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
     void CreateSwapChain();
     void CreateImageViews();
+    void CreateGraphicsPipeline();
+    VkShaderModule CreateShaderModule(const std::vector<char>& code);
 
     GLFWwindow* m_pWindow;
     VkInstance  m_VkInstance;               // Handle to the vulkan instance.
@@ -186,6 +190,30 @@ VKAPI_ATTR VkBool32 VKAPI_CALL HelloTriangleApp::DebugCallback(
     return VK_FALSE;
 }
 
+// helper function to shader binary files
+// reads all the bytes and returns a byte array managed by std::vector
+std::vector<char> HelloTriangleApp::ReadFile(
+    const std::string& filename)
+{
+    // ate: start reading at the end of the file to find size
+    // binary: read as binary
+    std::ifstream file(filename, std::ios::ate | std::ios::binary);
+
+    if (file.is_open() == false)
+    {
+        throw std::runtime_error("failed to open file!");
+    }
+
+    size_t fileSize = static_cast<size_t>(file.tellg());
+    std::vector<char> buffer(fileSize);
+
+    file.seekg(0);
+    file.read(buffer.data(), fileSize);
+    file.close();
+
+    return buffer;
+}
+
 void HelloTriangleApp::Run()
 {
     InitWindow();
@@ -217,6 +245,7 @@ void HelloTriangleApp::InitVulkan()
     CreateLogicalDevice();
     CreateSwapChain();
     CreateImageViews();
+    CreateGraphicsPipeline();
 }
 
 void HelloTriangleApp::MainLoop()
@@ -756,3 +785,51 @@ void HelloTriangleApp::CreateImageViews()
 
 }
 
+void HelloTriangleApp::CreateGraphicsPipeline()
+{
+    // visual studio current directory is the same as the project directory!
+    auto vertShaderCode = ReadFile("../shaders/vert.spv");
+    auto fragShaderCode = ReadFile("../shaders/frag.spv");
+
+    VkShaderModule vertShaderModule = CreateShaderModule(vertShaderCode);
+    VkShaderModule fragShaderModule = CreateShaderModule(fragShaderCode);
+
+    VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
+    vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+    vertShaderStageInfo.module = vertShaderModule;
+    vertShaderStageInfo.pName = "main";
+
+    VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
+    fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+    fragShaderStageInfo.module = fragShaderModule;
+    fragShaderStageInfo.pName = "main";
+
+    vkDestroyShaderModule(m_device, fragShaderModule, nullptr);
+    vkDestroyShaderModule(m_device, vertShaderModule, nullptr);
+}
+
+
+// creates a shader module from bytecode
+VkShaderModule HelloTriangleApp::CreateShaderModule(
+    const std::vector<char>& code)
+{
+    VkShaderModuleCreateInfo createInfo = {};
+    createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    createInfo.codeSize = code.size();
+
+    // this bytecode pointer expects a uint32 pointer rather than a char pointer so need to reinterpret_cast
+    createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
+
+    VkShaderModule shaderModule;
+
+    VkResult result = vkCreateShaderModule(m_device, &createInfo, nullptr, &shaderModule);
+
+    if (result != VK_SUCCESS)
+    {
+        throw std::runtime_error("failed to create shader module!");
+    }
+
+    return shaderModule;
+}
