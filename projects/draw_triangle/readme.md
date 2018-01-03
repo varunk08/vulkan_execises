@@ -45,3 +45,9 @@ Only `VK_PRESENT_MODE_FIFO_KHR` is guaranteed to be available.
 
 
 Vulkan tells us to match the resolution of the window by setting the width and height in the `currentExtent`. Some window managers do allow us to differ here and this is indicated by setting the width and height in `currentExtent` to a special value: the maximum value of `uint32_t`. 
+
+
+### Image Views  
+an image view is literally a view into an image.  
+an image view is sufficient to start using an image as a texture but it is not ready to be used as a render target. that required one more step of indirection, known as a framebuffer.  
+

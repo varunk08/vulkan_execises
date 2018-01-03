@@ -99,6 +99,7 @@ private:
     VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR> availablePresentModes);
     VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
     void CreateSwapChain();
+    void CreateImageViews();
 
     GLFWwindow* m_pWindow;
     VkInstance  m_VkInstance;               // Handle to the vulkan instance.
@@ -110,6 +111,7 @@ private:
     VkSurfaceKHR m_surface;
     VkSwapchainKHR m_swapChain;
     std::vector<VkImage> m_swapChainImages;
+    std::vector<VkImageView> m_swapchainImageViews;
     VkFormat m_swapchainImageFormat;
     VkExtent2D m_swapchainExtent;
 };
@@ -214,6 +216,7 @@ void HelloTriangleApp::InitVulkan()
     PickPhysicalDevice();
     CreateLogicalDevice();
     CreateSwapChain();
+    CreateImageViews();
 }
 
 void HelloTriangleApp::MainLoop()
@@ -226,6 +229,12 @@ void HelloTriangleApp::MainLoop()
 
 void HelloTriangleApp::Cleanup()
 {
+    for (auto imageView : m_swapchainImageViews)
+    {
+        vkDestroyImageView(m_device, imageView, nullptr);
+    }
+
+
     vkDestroySwapchainKHR(m_device, m_swapChain, nullptr);
     vkDestroyDevice(m_device, nullptr);
     DestroyDebugReportCallbackEXT(m_VkInstance, m_hCallback, nullptr);
@@ -709,3 +718,41 @@ void HelloTriangleApp::CreateSwapChain()
     m_swapchainImageFormat = surfaceFormat.format;
     m_swapchainExtent = extent;
 }
+
+// Creates a basic image view for every image in the swap chain for use as color targets.
+void HelloTriangleApp::CreateImageViews()
+{
+    m_swapchainImageViews.resize(m_swapChainImages.size());
+
+    for (size_t i = 0; i < m_swapChainImages.size(); ++i)
+    {
+        VkImageViewCreateInfo createInfo = {};
+        createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+        createInfo.image = m_swapChainImages[i];
+        createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+        createInfo.format = m_swapchainImageFormat;
+
+        // components field allows swizzling of color channels around
+        createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+        createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+        createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+        createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+
+        // defines what the image's purpose is and which part of the image should be accessed
+        // no mipmapping or multiple layers (eg. for stereoscopic images)
+        createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        createInfo.subresourceRange.baseMipLevel = 0;
+        createInfo.subresourceRange.levelCount = 1;
+        createInfo.subresourceRange.baseArrayLayer = 0;
+        createInfo.subresourceRange.layerCount = 1;
+
+        VkResult result = vkCreateImageView(m_device, &createInfo, nullptr, &m_swapchainImageViews[i]);
+
+        if (result != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to create image views!");
+        }
+    }
+
+}
+
