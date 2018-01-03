@@ -84,3 +84,25 @@ The `GL_ARB_separate_shader_objects` extension is required for vulkan shaders to
 
 Before passing in the bytecode to the pipeline we have to wrap it in a `VkShaderModule`  
 
+### fixed function state settings  
+vertex input state `VkPipelineVertexInputStateCreateInfo`   
+input assembly state `VkPipelineInputAssemblyStateCreateInfo`   
+
+view port and scissor  
+viewport describes the region of the framebuffer that the output will be rendered to.  
+they define the transformation from the image to the framebuffer.  
+combine viewport and scissor state into: `VkPipelineViewportStateCreateInfo`  
+
+Rasterizer `VkPipelineRasterizationStateCreateInfo `  
+Multisampling: `VkPipelineMultisampleStateCreateInfo `  
+Depth and stencil testing: `VkPipelineDepthStencilStateCreateInfo`  
+Color blending: blending the fragment generated with what is already in the framebuffer. `VkPipelineColorBlendAttachmentState` configures per attached framebuffer and `VkPipelineColorBlendStateCreateInfo` configures global color blending settings.  
+
+Dynamic state: ` VkPipelineDynamicStateCreateInfo` is used to configure a limited amount of state without recreating the pipeline  
+dynamic state can be changed during draw time  
+
+
+`uniform` values are globals similar to dynamic state variables that can be changed at drawing time to alter behaviour of shaders without having to recreate them.  
+used commonly to pass transformation matrix or texture samplers in fragment shader.  
+these uniform variables need to be specified during pipeline creation by creating a `VkPipelineLayout`  
+
