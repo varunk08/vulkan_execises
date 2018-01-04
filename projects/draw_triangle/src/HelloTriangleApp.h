@@ -70,16 +70,16 @@ public:
 
 private:
 
-    static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
-        VkDebugReportFlagsEXT      flags,
-        VkDebugReportObjectTypeEXT objType,
-        uint64                     obj,
-        size_t                     location,
-        int32                      code,
-        const char*                layerPrefix,
-        const char*                msg,
-        void*                      userData);
+    static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(VkDebugReportFlagsEXT      flags,
+                                                        VkDebugReportObjectTypeEXT objType,
+                                                        uint64                     obj,
+                                                        size_t                     location,
+                                                        int32                      code,
+                                                        const char*                layerPrefix,
+                                                        const char*                msg,
+                                                        void*                      userData);
     static std::vector<char>  ReadFile(const std::string& filename);
+    static void OnWindowResized(GLFWwindow* pWindow, int width, int height);
 
     void InitWindow();
     void InitVulkan();

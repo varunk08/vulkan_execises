@@ -1,4 +1,3 @@
-#include "common.h"
 #include "HelloTriangleApp.h"
 
 int main()

@@ -71,6 +71,20 @@ std::vector<char> HelloTriangleApp::ReadFile(
     return buffer;
 }
 
+void HelloTriangleApp::OnWindowResized(
+    GLFWwindow* pWindow,
+    int         width,
+    int         height)
+{
+    if (width == 0 || height == 0)
+    {
+        return;
+    }
+
+    HelloTriangleApp* pApp = reinterpret_cast<HelloTriangleApp*>(glfwGetWindowUserPointer(pWindow));
+    pApp->RecreateSwapchain();
+}
+
 void HelloTriangleApp::Run()
 {
     InitWindow();
@@ -85,11 +99,11 @@ void HelloTriangleApp::InitWindow()
 
     // Glfw loads openGL traditionally. Tell it not to.
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-
-    // resizeable windows are complicated. disable for now.
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-
+    
     m_pWindow = glfwCreateWindow(WIDTH, HEIGHT, "vulkan draw triangle", nullptr, nullptr);
+
+    glfwSetWindowUserPointer(m_pWindow, this);
+    glfwSetWindowSizeCallback(m_pWindow, HelloTriangleApp::OnWindowResized);
 }
 
 
@@ -539,7 +553,10 @@ VkExtent2D HelloTriangleApp::ChooseSwapExtent(
     }
     else
     {
-        VkExtent2D actualExtent = { WIDTH, HEIGHT };
+        int width, height;
+        glfwGetWindowSize(m_pWindow, &width, &height);
+
+        VkExtent2D actualExtent = { width, height };
         actualExtent.width = std::max(capabilities.minImageExtent.width, std::min(capabilities.maxImageExtent.width, actualExtent.width));
         actualExtent.height = std::max(capabilities.minImageExtent.height, std::min(capabilities.maxImageExtent.height, actualExtent.height));
 
@@ -975,16 +992,24 @@ void HelloTriangleApp::CreateCommandBuffers()
 // return the image to the swap chain for presentation
 void HelloTriangleApp::DrawFrame()
 {
-    vkQueueWaitIdle(m_presentQueue);
-
     uint32 imageIndex;
 
-    vkAcquireNextImageKHR(m_device,
-        m_swapChain,
-        std::numeric_limits<uint64>::max(),
-        m_imageAvailableSemaphore,
-        VK_NULL_HANDLE,
-        &imageIndex);
+    VkResult result = vkAcquireNextImageKHR(m_device,
+                                            m_swapChain,
+                                            std::numeric_limits<uint64>::max(),
+                                            m_imageAvailableSemaphore,
+                                            VK_NULL_HANDLE,
+                                            &imageIndex);
+
+    if (result == VK_ERROR_OUT_OF_DATE_KHR)
+    {
+        RecreateSwapchain();
+        return;
+    }
+    else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+    {
+        throw std::runtime_error("failed to acquire swap chain image!");
+    }
 
     VkSubmitInfo submitInfo = {};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -1018,7 +1043,18 @@ void HelloTriangleApp::DrawFrame()
     presentInfo.pImageIndices = &imageIndex;
     presentInfo.pResults = nullptr; // Optional
 
-    vkQueuePresentKHR(m_presentQueue, &presentInfo);
+    result = vkQueuePresentKHR(m_presentQueue, &presentInfo);
+    
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
+    {
+        RecreateSwapchain();
+    }
+    else if (result != VK_SUCCESS)
+    {
+        throw std::runtime_error("failed to acquire swap chain image!");
+    }
+
+    vkQueueWaitIdle(m_presentQueue);
 }
 
 void HelloTriangleApp::CreateSemaphores()
@@ -1038,6 +1074,7 @@ void HelloTriangleApp::RecreateSwapchain()
 {
     vkDeviceWaitIdle(m_device);
     CleanupSwapchain();
+
     CreateSwapChain();
     CreateImageViews();
     CreateRenderPass();
