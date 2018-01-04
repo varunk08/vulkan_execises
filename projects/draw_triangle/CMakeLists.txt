@@ -16,7 +16,9 @@ set (COMMON_DIR ../../common)
 
 # source files
 set (SRC_DIR src)
-set (SRC_FILES ${SRC_DIR}/main.cpp)
+set (SRC_FILES ${SRC_DIR}/main.cpp 
+               ${SRC_DIR}/HelloTriangleApp.cpp 
+               ${SRC_DIR}/HelloTriangleApp.h)
 
 # Find vulkan
 find_path(VULKAN_INCLUDE_DIR NAMES vulkan/vulkan.h PATHS "$ENV{VULKAN_SDK}/Include")
