@@ -115,3 +115,5 @@ fences or semaphores can be used to synchronize the order of operations within t
 state of fences can be accessed from your program and semaphores cannot be  
 fences are designed to synchronize your application itself with rendering operation  
 semaphores are used to synchronize operations within or across command queues  
+
+### vertex buffers  
