@@ -16,7 +16,7 @@
 
 #include "common.h"
 
-constexpr int WIDTH = 800;
+constexpr int WIDTH  = 800;
 constexpr int HEIGHT = 600;
 
 const std::vector<const char*> validationLayers =
@@ -77,6 +77,17 @@ struct Vertex
 		bindingDescription.stride = sizeof(Vertex);
 		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 		return bindingDescription;
+	}
+
+	static std::array<VkVertexInputAttributeDescription, 2> GetAttributeDescriptions()
+	{
+		std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions = {};
+		attributeDescriptions[0].binding = 0;
+		attributeDescriptions[0].location = 0;
+		attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
+		attributeDescriptions[0].offset = offsetof(Vertex, pos);
+
+		return attributeDescriptions;
 	}
 };
 

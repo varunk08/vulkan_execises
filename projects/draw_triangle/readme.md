@@ -119,3 +119,5 @@ semaphores are used to synchronize operations within or across command queues
 ### vertex data  
 binding descriptions: passing the vertex information to the vertex shader once it's uploaded to gpu memory  
 vertex binding describes at which rate to load data from memory throughout the vertices. it specifies the number of bytes between data entries and whether to move to the next data entry after each vertex or after each instance.  
+the second structure that describes how to handle vertex input is `VkVertexInputAttributeDescription`  
+the format parameter describes the type of data. formats are specified using the same enumeration as color formats  
