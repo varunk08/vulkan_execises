@@ -116,4 +116,6 @@ state of fences can be accessed from your program and semaphores cannot be
 fences are designed to synchronize your application itself with rendering operation  
 semaphores are used to synchronize operations within or across command queues  
 
-### vertex buffers  
+### vertex data  
+binding descriptions: passing the vertex information to the vertex shader once it's uploaded to gpu memory  
+vertex binding describes at which rate to load data from memory throughout the vertices. it specifies the number of bytes between data entries and whether to move to the next data entry after each vertex or after each instance.  

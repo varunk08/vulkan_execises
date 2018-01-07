@@ -6,6 +6,7 @@
 #include <glm\glm.hpp>
 
 #include <algorithm>
+#include <array>
 #include <functional>
 #include <fstream>
 #include <iostream>
@@ -68,6 +69,15 @@ struct Vertex
 {
 	glm::vec2 pos;
 	glm::vec3 color;
+
+	static VkVertexInputBindingDescription GetBindingDescription()
+	{
+		VkVertexInputBindingDescription bindingDescription = {};
+		bindingDescription.binding = 0;
+		bindingDescription.stride = sizeof(Vertex);
+		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+		return bindingDescription;
+	}
 };
 
 const std::vector<Vertex> vertices =
@@ -75,7 +85,7 @@ const std::vector<Vertex> vertices =
 	{{0.0f, -0.5f},{1.0f, 0.0f, 0.0f}},
 	{{0.5f, 0.5f},{0.0f, 1.0f, 0.0f}},
 	{{-0.5f, 0.5f},{0.0f, 0.0f, 1.0f}}
-}
+};
 
 class HelloTriangleApp
 {
