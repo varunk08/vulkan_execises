@@ -98,7 +98,7 @@ struct Vertex
 
 const std::vector<Vertex> vertices =
 {
-	{{0.0f, -0.5f},{1.0f, 0.0f, 0.0f}},
+	{{0.25f, -0.5f},{1.0f, 1.0f, 1.0f}},
 	{{0.5f, 0.5f},{0.0f, 1.0f, 0.0f}},
 	{{-0.5f, 0.5f},{0.0f, 0.0f, 1.0f}}
 };
@@ -151,6 +151,8 @@ private:
     void CreateSemaphores();
     void RecreateSwapchain();
     void CleanupSwapchain();
+	void CreateVertexBuffer();
+	uint32 FindMemoryType(uint32 typeFilter, VkMemoryPropertyFlags properties);
 
     GLFWwindow*                  m_pWindow;
     VkInstance                   m_VkInstance;               // Handle to the vulkan instance.
@@ -173,4 +175,6 @@ private:
     std::vector<VkCommandBuffer> m_commandBuffers;
     VkSemaphore                  m_imageAvailableSemaphore;
     VkSemaphore                  m_renderFinishedSemaphore;
+	VkBuffer					 m_vertexBuffer;
+	VkDeviceMemory				 m_vertexBufferMemory;
 };
