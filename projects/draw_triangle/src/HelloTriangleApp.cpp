@@ -121,6 +121,7 @@ void HelloTriangleApp::InitVulkan()
     CreateFramebuffers();
     CreateCommandPool();
 	CreateVertexBuffer();
+	CreateIndexBuffer();
 	CreateCommandBuffers();
     CreateSemaphores();
 }
@@ -140,8 +141,16 @@ void HelloTriangleApp::Cleanup()
 {
     vkDestroySemaphore(m_device, m_renderFinishedSemaphore, nullptr);
     vkDestroySemaphore(m_device, m_imageAvailableSemaphore, nullptr);
+
+	// index buffer
+	vkDestroyBuffer(m_device, m_indexBuffer, nullptr);
+	vkFreeMemory(m_device, m_indexBufferMemory, nullptr);
+
+	// vertex buffer
 	vkDestroyBuffer(m_device, m_vertexBuffer, nullptr);
 	vkFreeMemory(m_device, m_vertexBufferMemory, nullptr);
+
+	// command pool
     vkDestroyCommandPool(m_device, m_commandPool, nullptr);
     vkDestroyDevice(m_device, nullptr);
     DestroyDebugReportCallbackEXT(m_VkInstance, m_hCallback, nullptr);
@@ -426,23 +435,6 @@ bool HelloTriangleApp::CreateLogicalDevice()
 
 void HelloTriangleApp::CreateSurface()
 {
-    /*VkWin32SurfaceCreateInfoKHR createInfo;
-    createInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-    createInfo.hwnd = glfwGetWin32Window(m_pWindow);
-
-    auto CreateWin32SurfaceKHR = (PFN_vkCreateWin32SurfaceKHR)vkGetInstanceProcAddr(m_VkInstance,
-    "vkCreateWin32SurfaceKHR");
-
-    if (CreateWin32SurfaceKHR != nullptr)
-    {
-    VkResult result = CreateWin32SurfaceKHR(m_VkInstance, &createInfo, nullptr, &m_surface);
-
-    if (result != VK_SUCCESS)
-    {
-    throw std::runtime_error("failed to crete window surface!");
-    }
-    }*/
-
     VkResult result = glfwCreateWindowSurface(m_VkInstance, m_pWindow, nullptr, &m_surface);
 
     if (result != VK_SUCCESS)
@@ -986,8 +978,9 @@ void HelloTriangleApp::CreateCommandBuffers()
 		VkBuffer vertexBuffers[] = { m_vertexBuffer };
 		VkDeviceSize offsets[] = { 0 };
 		vkCmdBindVertexBuffers(m_commandBuffers[i], 0, 1, vertexBuffers, offsets);
+		vkCmdBindIndexBuffer(m_commandBuffers[i], m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
 
-        vkCmdDraw(m_commandBuffers[i], static_cast<uint32>(vertices.size()), 1, 0, 0);
+		vkCmdDrawIndexed(m_commandBuffers[i], static_cast<uint32>(indices.size()), 1, 0, 0, 0);
         vkCmdEndRenderPass(m_commandBuffers[i]);
 
         if (vkEndCommandBuffer(m_commandBuffers[i]) != VK_SUCCESS)
@@ -1240,4 +1233,35 @@ void HelloTriangleApp::CopyBuffer(
 	vkQueueWaitIdle(m_graphicsQueue);
 
 	vkFreeCommandBuffers(m_device, m_commandPool, 1, &commandBuffer);
+
+}
+
+void HelloTriangleApp::CreateIndexBuffer()
+{
+	VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
+
+	VkBuffer stagingBuffer;
+	VkDeviceMemory stagingBufferMemory;
+
+	CreateBuffer(bufferSize,
+				 VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+				 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+				 stagingBuffer,
+				 stagingBufferMemory);
+
+	void* pData;
+	vkMapMemory(m_device, stagingBufferMemory, 0, bufferSize, 0, &pData);
+	memcpy(pData, indices.data(), static_cast<size_t>(bufferSize));
+	vkUnmapMemory(m_device, stagingBufferMemory);
+
+	CreateBuffer(bufferSize,
+				 VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+				 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+				 m_indexBuffer,
+				 m_indexBufferMemory);
+
+	CopyBuffer(stagingBuffer, m_indexBuffer, bufferSize);
+
+	vkDestroyBuffer(m_device, stagingBuffer, nullptr);
+	vkFreeMemory(m_device, stagingBufferMemory, nullptr);
 }
