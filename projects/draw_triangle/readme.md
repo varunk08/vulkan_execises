@@ -121,3 +121,14 @@ binding descriptions: passing the vertex information to the vertex shader once i
 vertex binding describes at which rate to load data from memory throughout the vertices. it specifies the number of bytes between data entries and whether to move to the next data entry after each vertex or after each instance.  
 the second structure that describes how to handle vertex input is `VkVertexInputAttributeDescription`  
 the format parameter describes the type of data. formats are specified using the same enumeration as color formats  
+
+
+### Resource descriptors  
+a descriptor is a way for shaders to freely access resources like buffers and images.  
+usage of descriptors consists of three parts:  
+1. specify a descriptor layout during pipeline creation.  
+2. allocate a descriptor set from a descriptor pool.  
+3. bind the descriptor set during rendering.  
+
+descriptor layout specifies the types of resources that are going to be accessed by the pipeline.  
+push constants are more efficient than uniform buffer objects for frequently changing data.  

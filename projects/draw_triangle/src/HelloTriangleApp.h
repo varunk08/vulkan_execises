@@ -1,12 +1,15 @@
 #pragma once
 
 #define GLFW_INCLUDE_VULKAN
+#define GLM_FORCE_RADIANS
 
 #include <GLFW\glfw3.h>
 #include <glm\glm.hpp>
+#include <glm\gtc\matrix_transform.hpp>
 
 #include <algorithm>
 #include <array>
+#include <chrono>
 #include <functional>
 #include <fstream>
 #include <iostream>
@@ -45,6 +48,13 @@ void DestroyDebugReportCallbackEXT(
     VkInstance                   instance,
     VkDebugReportCallbackEXT     callback,
     const VkAllocationCallbacks* pAllocator);
+
+struct UniformBufferObject
+{
+	glm::mat4 model;
+	glm::mat4 view;
+	glm::mat4 proj;
+};
 
 struct QueueFamilyIndices
 {
@@ -154,6 +164,7 @@ private:
     void CreateCommandPool();
     void CreateCommandBuffers();
     void DrawFrame();
+	void UpdateUniformBuffer();
     void CreateSemaphores();
     void RecreateSwapchain();
     void CleanupSwapchain();
@@ -162,7 +173,11 @@ private:
 	void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 	void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 	void CreateIndexBuffer();
-	
+	void CreateDescriptorSetLayout();
+	void CreateUniformBuffer();
+	void CreateDescriptorPool();
+	void CreateDescriptorSet();
+
     GLFWwindow*                  m_pWindow;
     VkInstance                   m_VkInstance;               // Handle to the vulkan instance.
     VkDebugReportCallbackEXT     m_hCallback;
@@ -177,6 +192,7 @@ private:
     VkFormat                     m_swapchainImageFormat;
     VkExtent2D                   m_swapchainExtent;
     VkRenderPass                 m_renderPass;
+	VkDescriptorSetLayout		 m_descriptorSetLayout;
     VkPipelineLayout             m_pipelineLayout;
     VkPipeline                   m_graphicsPipeline;
     std::vector<VkFramebuffer>   m_swapchainFramebuffers;
@@ -188,4 +204,8 @@ private:
 	VkDeviceMemory				 m_vertexBufferMemory;
 	VkBuffer					 m_indexBuffer;
 	VkDeviceMemory				 m_indexBufferMemory;
+	VkBuffer				     m_uniformBuffer;
+	VkDeviceMemory				 m_uniformBufferMemory;
+	VkDescriptorPool			 m_descriptorPool;
+	VkDescriptorSet				 m_descriptorSet;
 };
