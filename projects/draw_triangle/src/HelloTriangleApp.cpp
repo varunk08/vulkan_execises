@@ -1443,4 +1443,28 @@ void HelloTriangleApp::CreateTextureImage()
 	{
 		throw std::runtime_error("failed to load texture image!");
 	}
+
+	// host visible memory
+	VkBuffer stagingBuffer;
+	VkDeviceMemory stagingBufferMemory;
+
+	CreateBuffer(imageSize,
+			     VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+				 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+				 stagingBuffer,
+				 stagingBufferMemory);
+
+	void* pData;
+	vkMapMemory(m_device,
+				stagingBufferMemory,
+				0,
+				imageSize,
+				0,
+				&pData);
+
+	memcpy(pData, pPixels, static_cast<size_t>(imageSize));
+
+	vkUnmapMemory(m_device, stagingBufferMemory);
+
+	stbi_image_free(pPixels);
 }
