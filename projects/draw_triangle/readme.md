@@ -132,3 +132,11 @@ usage of descriptors consists of three parts:
 
 descriptor layout specifies the types of resources that are going to be accessed by the pipeline.  
 push constants are more efficient than uniform buffer objects for frequently changing data.  
+
+### Texture mapping  
+using a texture needs the following steps:  
+create an image object backed by device memory  
+fill with pixels from an image file  
+create an image sampler  
+add a combined image sampler descriptor to sample colors from the texture 
+

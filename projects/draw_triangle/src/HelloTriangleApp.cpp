@@ -1102,7 +1102,7 @@ void HelloTriangleApp::UpdateUniformBuffer()
 
 	UniformBufferObject ubo = {};
 	ubo.model = glm::rotate(glm::mat4(1.0f), // identity matrix
-							time * glm::radians(90.0f), // rotation amount
+							time * glm::radians(180.0f), // rotation amount
 							glm::vec3(0.0f, 0.0f, 1.0f)); // axis of rotation
 
 	ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), // eye pos
