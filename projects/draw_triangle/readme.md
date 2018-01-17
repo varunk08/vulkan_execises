@@ -140,3 +140,14 @@ fill with pixels from an image file
 create an image sampler  
 add a combined image sampler descriptor to sample colors from the texture 
 
+images can have different layouts that affect how the pixels are organized in memory. storing the pixels row by row may not lead to the best performance
+
+some layouts and what they are optimaal for:  
+`VK_IMAGE_LAYOUT_PRESENT_SRC_KHR` optimal for presentation  
+`VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL`: optimal as attachment for writing colors from the fragment shader  
+`VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL`: source in a transfer operation  
+`VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL`: destination of transfer operation  
+`VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL`: sampling from a shader  
+
+__pippeline barriers__ are used to transition the layout of an image and synchronize access to resources (making sure the write to an image is finished before read).  
+
