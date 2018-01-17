@@ -152,3 +152,7 @@ some layouts and what they are optimaal for:
 __pippeline barriers__ are used to transition the layout of an image and synchronize access to resources (making sure the write to an image is finished before read) and also for transferring queue family ownership when using `VK_SHARING_MODE_EXCLUSIVE`.  
 
 `STB_IMAGE_IMPLEMENTATION` must be defined in a .c or .cpp and not a header file. This is because when that is defined, the stb functions are defined. So having it in the c or cpp files makes sure it is defined only once.  
+
+image object make it easier and faster to retrieve colors by allowing us to use 2D coordinates.
+tiling mode cannot be changed at a later time.  
+undefined layout: not usable by Gpu, but very first layout transition will discard the texels.  

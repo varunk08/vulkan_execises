@@ -179,6 +179,10 @@ private:
 	void CreateDescriptorPool();
 	void CreateDescriptorSet();
 	void CreateTextureImage();
+	void CreateImage(uint32 width, uint32 height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
+	VkCommandBuffer BeginSingleTimeCommands();
+	void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
+	void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 
     GLFWwindow*                  m_pWindow;
     VkInstance                   m_VkInstance;               // Handle to the vulkan instance.
@@ -210,4 +214,7 @@ private:
 	VkDeviceMemory				 m_uniformBufferMemory;
 	VkDescriptorPool			 m_descriptorPool;
 	VkDescriptorSet				 m_descriptorSet;
+	VkImage						 m_textureImage;
+	VkDeviceMemory			     m_textureImageMemory;
+
 };
