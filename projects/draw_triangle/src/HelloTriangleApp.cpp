@@ -1429,6 +1429,18 @@ void HelloTriangleApp::CreateDescriptorSet()
 
 void HelloTriangleApp::CreateTextureImage()
 {
+	int texWidth, texHeight, texChannels;
 
+	stbi_uc* pPixels = stbi_load("../../../assets/statue.jpg",
+								 &texWidth,
+								 &texHeight,
+								 &texChannels,
+								 STBI_rgb_alpha);
 
+	VkDeviceSize imageSize = texWidth * texHeight * 4;
+
+	if (pPixels == nullptr)
+	{
+		throw std::runtime_error("failed to load texture image!");
+	}
 }

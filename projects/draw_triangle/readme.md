@@ -151,3 +151,4 @@ some layouts and what they are optimaal for:
 
 __pippeline barriers__ are used to transition the layout of an image and synchronize access to resources (making sure the write to an image is finished before read) and also for transferring queue family ownership when using `VK_SHARING_MODE_EXCLUSIVE`.  
 
+`STB_IMAGE_IMPLEMENTATION` must be defined in a .c or .cpp and not a header file. This is because when that is defined, the stb functions are defined. So having it in the c or cpp files makes sure it is defined only once.  
