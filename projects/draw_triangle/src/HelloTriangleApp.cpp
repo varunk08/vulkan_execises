@@ -122,6 +122,9 @@ void HelloTriangleApp::InitVulkan()
     CreateFramebuffers();
     CreateCommandPool();
 
+	// texture image
+	CreateTextureImage();
+	
 	// buffers
 	CreateVertexBuffer();
 	CreateIndexBuffer();
@@ -1422,4 +1425,10 @@ void HelloTriangleApp::CreateDescriptorSet()
 
 
 	vkUpdateDescriptorSets(m_device, 1, &descriptorWrite, 0, nullptr);
+}
+
+void HelloTriangleApp::CreateTextureImage()
+{
+
+
 }

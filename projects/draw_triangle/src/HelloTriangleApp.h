@@ -2,10 +2,12 @@
 
 #define GLFW_INCLUDE_VULKAN
 #define GLM_FORCE_RADIANS
+#define STB_IMAGE_IMPLEMENTATION
 
 #include <GLFW\glfw3.h>
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
+#include <stb_image.h>
 
 #include <algorithm>
 #include <array>
@@ -177,6 +179,7 @@ private:
 	void CreateUniformBuffer();
 	void CreateDescriptorPool();
 	void CreateDescriptorSet();
+	void CreateTextureImage();
 
     GLFWwindow*                  m_pWindow;
     VkInstance                   m_VkInstance;               // Handle to the vulkan instance.

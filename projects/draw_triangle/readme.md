@@ -149,5 +149,5 @@ some layouts and what they are optimaal for:
 `VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL`: destination of transfer operation  
 `VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL`: sampling from a shader  
 
-__pippeline barriers__ are used to transition the layout of an image and synchronize access to resources (making sure the write to an image is finished before read).  
+__pippeline barriers__ are used to transition the layout of an image and synchronize access to resources (making sure the write to an image is finished before read) and also for transferring queue family ownership when using `VK_SHARING_MODE_EXCLUSIVE`.  
 

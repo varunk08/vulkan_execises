@@ -12,6 +12,8 @@ set (GLM_INCLUDE ${LIB_DIR}/glm)
 set (GLFW_BIN_DIR ${LIB_BIN_DIR}/glfw/)
 set (GLFW_BIN_VS2015 ${GLFW_BIN_DIR}/lib-vc2015)
 
+set (STB_IMAGE_INCLUDE ${LIB_DIR}/stb)
+
 set (COMMON_DIR ../../common)
 
 # source files
@@ -45,6 +47,7 @@ include_directories (${COMMON_DIR}
                      ${GLFW_INCLUDE}
                      ${GLM_INCLUDE}
                      ${VULKAN_INCLUDE_DIR}
+                     ${STB_IMAGE_INCLUDE}
                      )	
 
 add_executable(triangle ${SRC_FILES})
