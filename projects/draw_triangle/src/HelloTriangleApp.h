@@ -183,6 +183,7 @@ private:
 	VkCommandBuffer BeginSingleTimeCommands();
 	void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
 	void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+	void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32 width, uint32 height);
 
     GLFWwindow*                  m_pWindow;
     VkInstance                   m_VkInstance;               // Handle to the vulkan instance.
