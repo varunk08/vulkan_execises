@@ -142,7 +142,7 @@ add a combined image sampler descriptor to sample colors from the texture
 
 images can have different layouts that affect how the pixels are organized in memory. storing the pixels row by row may not lead to the best performance
 
-some layouts and what they are optimaal for:  
+some layouts and what they are optimal for:  
 `VK_IMAGE_LAYOUT_PRESENT_SRC_KHR` optimal for presentation  
 `VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL`: optimal as attachment for writing colors from the fragment shader  
 `VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL`: source in a transfer operation  
@@ -156,3 +156,11 @@ __pippeline barriers__ are used to transition the layout of an image and synchro
 image object make it easier and faster to retrieve colors by allowing us to use 2D coordinates.
 tiling mode cannot be changed at a later time.  
 undefined layout: not usable by Gpu, but very first layout transition will discard the texels.  
+
+### Samplers
+it's possible for shaders to read texels directly from images.  
+but this is not how it's done. textures are read through samplers. samplers will apply filtering and transformations to compute the final color that is retrieved  
+reading outside the image through it's addressing mode: repeat, mirrored repeat, clamp to edge, clamp to border.  
+
+`magFilter` and `minFilter` fields specify how to interpolate texels that are magnified or minified.  
+Magnification concerns the oversampling problem described above and minification concerns undersampling.  

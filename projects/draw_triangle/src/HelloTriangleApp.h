@@ -184,6 +184,9 @@ private:
 	void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
 	void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 	void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32 width, uint32 height);
+	void CreateTextureImageView();
+	VkImageView CreateImageView(VkImage image, VkFormat format);
+	void CreateTextureSampler();
 
     GLFWwindow*                  m_pWindow;
     VkInstance                   m_VkInstance;               // Handle to the vulkan instance.
@@ -217,5 +220,7 @@ private:
 	VkDescriptorSet				 m_descriptorSet;
 	VkImage						 m_textureImage;
 	VkDeviceMemory			     m_textureImageMemory;
+	VkImageView					 m_textureImageView;
+	VkSampler					 m_textureSampler;
 
 };
