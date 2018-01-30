@@ -164,3 +164,8 @@ reading outside the image through it's addressing mode: repeat, mirrored repeat,
 
 `magFilter` and `minFilter` fields specify how to interpolate texels that are magnified or minified.  
 Magnification concerns the oversampling problem described above and minification concerns undersampling.  
+
+descriptor for images: combined image sampler  
+
+
+### Texture coordinates
