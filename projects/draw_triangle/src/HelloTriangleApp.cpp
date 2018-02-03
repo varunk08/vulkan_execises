@@ -1668,6 +1668,8 @@ void HelloTriangleApp::CopyBufferToImage(
 		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 		1,
 		&region);
+
+	EndSingleTimeCommands(cmdBuffer);
 }
 
 void HelloTriangleApp::CreateTextureImageView()
