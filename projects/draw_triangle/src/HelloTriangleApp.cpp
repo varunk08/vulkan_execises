@@ -157,15 +157,8 @@ void HelloTriangleApp::MainLoop()
 
 void HelloTriangleApp::Cleanup()
 {
-    vkDestroySemaphore(m_device, m_renderFinishedSemaphore, nullptr);
-    vkDestroySemaphore(m_device, m_imageAvailableSemaphore, nullptr);
-
-	// descriptor pool
-	vkDestroyDescriptorPool(m_device, m_descriptorPool, nullptr);
+	CleanupSwapchain();
 	
-	// descriptor set layout
-	vkDestroyDescriptorSetLayout(m_device, m_descriptorSetLayout, nullptr);
-
 	// texture sampler
 	vkDestroySampler(m_device, m_textureSampler, nullptr);
 	
@@ -173,6 +166,13 @@ void HelloTriangleApp::Cleanup()
 	vkDestroyImageView(m_device, m_textureImageView, nullptr);
 	vkDestroyImage(m_device, m_textureImage, nullptr);
 	vkFreeMemory(m_device, m_textureImageMemory, nullptr);
+	
+	// descriptor pool
+	vkDestroyDescriptorPool(m_device, m_descriptorPool, nullptr);
+	
+	// descriptor set layout
+	vkDestroyDescriptorSetLayout(m_device, m_descriptorSetLayout, nullptr);
+
 
 	// uniform buffer
 	vkDestroyBuffer(m_device, m_uniformBuffer, nullptr);
@@ -186,8 +186,12 @@ void HelloTriangleApp::Cleanup()
 	vkDestroyBuffer(m_device, m_vertexBuffer, nullptr);
 	vkFreeMemory(m_device, m_vertexBufferMemory, nullptr);
 
+    vkDestroySemaphore(m_device, m_renderFinishedSemaphore, nullptr);
+    vkDestroySemaphore(m_device, m_imageAvailableSemaphore, nullptr);
+
 	// command pool
     vkDestroyCommandPool(m_device, m_commandPool, nullptr);
+
     vkDestroyDevice(m_device, nullptr);
     DestroyDebugReportCallbackEXT(m_VkInstance, m_hCallback, nullptr);
     vkDestroySurfaceKHR(m_VkInstance, m_surface, nullptr);
@@ -887,11 +891,11 @@ void HelloTriangleApp::CreateRenderPass()
     subpass.pColorAttachments = &colorAttachmentRef;
 
     VkSubpassDependency dependency = {};
-    dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-    dependency.dstSubpass = 0;
-    dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.srcSubpass    = VK_SUBPASS_EXTERNAL;
+    dependency.dstSubpass    = 0;
+    dependency.srcStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
     dependency.srcAccessMask = 0;
-    dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.dstStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
     dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
     VkRenderPassCreateInfo renderPassInfo = {};
@@ -1328,9 +1332,7 @@ void HelloTriangleApp::CreateDescriptorSetLayout()
 	if (result != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create descriptor set layout!");
-	} 
-
-	
+	} 	
 }
 
 
@@ -1348,16 +1350,16 @@ void HelloTriangleApp::CreateUniformBuffer()
 void HelloTriangleApp::CreateDescriptorPool()
 {
 	std::array<VkDescriptorPoolSize, 2> poolSizes = {};
-	poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	poolSizes[0].descriptorCount = 1;
-	poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	poolSizes[1].descriptorCount = 1;
+	poolSizes[0].type							  = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	poolSizes[0].descriptorCount				  = 1;
+	poolSizes[1].type							  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	poolSizes[1].descriptorCount				  = 1;
 
 	VkDescriptorPoolCreateInfo poolInfo = {};
-	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-	poolInfo.poolSizeCount = static_cast<uint32>(poolSizes.size());
-	poolInfo.pPoolSizes = poolSizes.data();
-	poolInfo.maxSets = 1;
+	poolInfo.sType						= VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+	poolInfo.poolSizeCount				= static_cast<uint32>(poolSizes.size());
+	poolInfo.pPoolSizes					= poolSizes.data();
+	poolInfo.maxSets					= 1;
 
 	VkResult result = vkCreateDescriptorPool(m_device, &poolInfo, nullptr, &m_descriptorPool);
 
@@ -1605,6 +1607,9 @@ void HelloTriangleApp::TransitionImageLayout(
 	{
 		barrier.srcAccessMask = 0;
 		barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+
+		sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+		destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 	}
 	else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
 			 newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
@@ -1637,21 +1642,21 @@ void HelloTriangleApp::TransitionImageLayout(
 
 void HelloTriangleApp::CopyBufferToImage(
 	VkBuffer buffer,
-	VkImage image,
-	uint32 width,
-	uint32 height)
+	VkImage  image,
+	uint32   width,
+	uint32   height)
 {
 	VkCommandBuffer cmdBuffer = BeginSingleTimeCommands();
 
 	VkBufferImageCopy region = {};
-	region.bufferOffset = 0;
-	region.bufferRowLength = 0;
+	region.bufferOffset      = 0;
+	region.bufferRowLength   = 0;
 	region.bufferImageHeight = 0;
 
-	region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	region.imageSubresource.mipLevel = 0;
+	region.imageSubresource.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
+	region.imageSubresource.mipLevel       = 0;
 	region.imageSubresource.baseArrayLayer = 0;
-	region.imageSubresource.layerCount = 1;
+	region.imageSubresource.layerCount	   = 1;
 
 	region.imageOffset = { 0, 0, 0 };
 	region.imageExtent =
