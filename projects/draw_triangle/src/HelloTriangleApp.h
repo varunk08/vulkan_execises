@@ -2,6 +2,7 @@
 
 #define GLFW_INCLUDE_VULKAN
 #define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 
 #include <GLFW\glfw3.h>
 #include <glm\glm.hpp>
@@ -78,7 +79,7 @@ struct SwapChainSupportDetails
 
 struct Vertex
 {
-	glm::vec2 pos;
+	glm::vec3 pos;
 	glm::vec3 color;
 	glm::vec2 texCoord;
 
@@ -96,7 +97,7 @@ struct Vertex
 		std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions = {};
 		attributeDescriptions[0].binding = 0;
 		attributeDescriptions[0].location = 0;
-		attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
+		attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
 		attributeDescriptions[0].offset = offsetof(Vertex, pos);
 
 		attributeDescriptions[1].binding = 0;
@@ -115,15 +116,21 @@ struct Vertex
 
 const std::vector<Vertex> vertices =
 {
-	{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-	{{0.5f, -0.5f},  {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
-	{{0.5f, 0.5f},	 {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
-	{{-0.5f, 0.5f},	 {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}}
+	{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+	{{0.5f, -0.5f, 0.0f},  {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
+	{{0.5f, 0.5f, 0.0f},   {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
+	{{-0.5f, 0.5f, 0.0f},  {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+
+	{{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+	{{0.5f, -0.5f, -0.5f},  {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
+	{{0.5f, 0.5f, -0.5f},   {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
+	{{-0.5f, 0.5f, -0.5f},  {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}}
 };
 
 const std::vector<uint16> indices =
 {
-	0, 1, 2, 2, 3, 0
+	0, 1, 2, 2, 3, 0,
+	4, 5, 6, 6, 7, 4
 };
 
 class HelloTriangleApp
@@ -163,7 +170,7 @@ private:
     VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR> availablePresentModes);
     VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
     void CreateSwapChain();
-    void CreateImageViews();
+    void CreateSwapChainImageViews();
     void CreateGraphicsPipeline();
     VkShaderModule CreateShaderModule(const std::vector<char>& code);
     void CreateRenderPass();
@@ -191,8 +198,12 @@ private:
 	void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 	void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32 width, uint32 height);
 	void CreateTextureImageView();
-	VkImageView CreateImageView(VkImage image, VkFormat format);
+	VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
 	void CreateTextureSampler();
+	void CreateDepthResources();
+	VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+	VkFormat FindDepthFormat();
+	bool HasStencilComponent(VkFormat format);
 
     GLFWwindow*                  m_pWindow;
     VkInstance                   m_VkInstance;               // Handle to the vulkan instance.
@@ -228,5 +239,7 @@ private:
 	VkDeviceMemory			     m_textureImageMemory;
 	VkImageView					 m_textureImageView;
 	VkSampler					 m_textureSampler;
-
+	VkImage						 m_depthImage;
+	VkDeviceMemory				 m_depthImageMemory;
+	VkImageView					 m_depthImageView;
 };

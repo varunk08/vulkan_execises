@@ -168,4 +168,5 @@ Magnification concerns the oversampling problem described above and minification
 descriptor for images: combined image sampler  
 
 
-### Texture coordinates
+### Depth buffering
+depth image should have the same resolution as the color attachment defined by the swap chain extent.
