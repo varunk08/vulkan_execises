@@ -117,26 +117,8 @@ struct Vertex
 	}
 };
 
-const std::vector<Vertex> vertices =
-{
-	{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-	{{0.5f, -0.5f, 0.0f},  {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
-	{{0.5f, 0.5f, 0.0f},   {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
-	{{-0.5f, 0.5f, 0.0f},  {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
 
-	{{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-	{{0.5f, -0.5f, -0.5f},  {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
-	{{0.5f, 0.5f, -0.5f},   {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
-	{{-0.5f, 0.5f, -0.5f},  {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}}
-};
-
-const std::vector<uint16> indices =
-{
-	0, 1, 2, 2, 3, 0,
-	4, 5, 6, 6, 7, 4
-};
-
-class HelloTriangleApp
+class HelloModel
 {
 public:
     void Run();
@@ -207,6 +189,7 @@ private:
 	VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
 	VkFormat FindDepthFormat();
 	bool HasStencilComponent(VkFormat format);
+	void LoadModel();
 
     GLFWwindow*                  m_pWindow;
     VkInstance                   m_VkInstance;               // Handle to the vulkan instance.
@@ -245,4 +228,6 @@ private:
 	VkImage						 m_depthImage;
 	VkDeviceMemory				 m_depthImageMemory;
 	VkImageView					 m_depthImageView;
+	std::vector<Vertex>			 m_vertices;
+	std::vector<uint32>			 m_indices;
 };

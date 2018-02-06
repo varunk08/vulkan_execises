@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project (draw_triangle)
+project (draw_model)
 
 
 # libraries
@@ -20,8 +20,8 @@ set (COMMON_DIR ../../common)
 # source files
 set (SRC_DIR src)
 set (SRC_FILES ${SRC_DIR}/main.cpp 
-               ${SRC_DIR}/HelloTriangleApp.cpp 
-               ${SRC_DIR}/HelloTriangleApp.h)
+               ${SRC_DIR}/HelloModel.cpp 
+               ${SRC_DIR}/HelloModel.h)
 
 # Find vulkan
 find_path(VULKAN_INCLUDE_DIR NAMES vulkan/vulkan.h PATHS "$ENV{VULKAN_SDK}/Include")
@@ -52,6 +52,6 @@ include_directories (${COMMON_DIR}
                      ${TINY_OBJ_INC}
                      )	
 
-add_executable(triangle ${SRC_FILES})
+add_executable(draw_model ${SRC_FILES})
 
-target_link_libraries (triangle ${VK_SDK} ${GLFW_BIN})
+target_link_libraries (draw_model ${VK_SDK} ${GLFW_BIN})

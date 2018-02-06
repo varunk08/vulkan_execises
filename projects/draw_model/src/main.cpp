@@ -1,11 +1,11 @@
 #define STB_IMAGE_IMPLEMENTATION
 #define TINYOBJLOADER_IMPLEMENTATION
 
-#include "HelloTriangleApp.h"
+#include "HelloModel.h"
 
 int main()
 {
-    HelloTriangleApp app;
+    HelloModel app;
 
     try
     {
