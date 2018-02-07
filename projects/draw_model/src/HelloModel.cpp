@@ -458,7 +458,6 @@ bool HelloModel::CreateLogicalDevice()
 
     VkPhysicalDeviceFeatures deviceFeatures = {};
 	deviceFeatures.samplerAnisotropy	= VK_TRUE;
-	deviceFeatures.depthBounds			= VK_TRUE;
 
     VkDeviceCreateInfo createInfo = {};
     createInfo.sType					= VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -828,7 +827,7 @@ void HelloModel::CreateGraphicsPipeline()
 	depthStencil.depthTestEnable			= VK_TRUE;
 	depthStencil.depthWriteEnable			= VK_TRUE;
 	depthStencil.depthCompareOp				= VK_COMPARE_OP_LESS;
-	depthStencil.depthBoundsTestEnable		= VK_TRUE;
+	depthStencil.depthBoundsTestEnable		= VK_FALSE;
 	depthStencil.minDepthBounds				= 0.0f;
 	depthStencil.maxDepthBounds				= 1.0f;
 	depthStencil.stencilTestEnable			= VK_FALSE;
